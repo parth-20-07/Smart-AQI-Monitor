@@ -149,7 +149,7 @@ String collect_temperature_humidity_and_pressure_values(void)
     uint8_t temp = temperature_and_humidity_sensor.readTemperature();
     // Serial.println("Temperature: " + (String)temp + "C");
     // Serial.println("Humidity: " + (String)humd + "%");
-    return (",T:" + (String)temp + ",H:" + (String)humd);
+    return ("T:" + (String)temp + ",H:" + (String)humd);
 }
 #endif // HTU21D_TEMP_HUMIDITY_SENSOR
 

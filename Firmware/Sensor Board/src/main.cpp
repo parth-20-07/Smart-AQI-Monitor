@@ -14,7 +14,7 @@ void loop()
 {
   if ((millis() - sensor_data_collection_millis) > SENSOR_DATA_REFRESH_TIME)
   {
-    String msg = "Data";
+    String msg;
     /**
      * T => Temperature
      * H => Humidity

@@ -9,4 +9,13 @@
 #define WHITE 255, 255, 255
 #define BLACK 0, 0, 0
 
+/* --------------------------- Sensor Data Values --------------------------- */
+// T => Temperature
+// H => Humidity
+// C => Carbondioxide
+// M => Carbonmonoxide
+// D => Dust PM AE 2.5
+// L => Light Intensity
+uint16_t temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux;
+
 #endif // Variable_Declaration_h
