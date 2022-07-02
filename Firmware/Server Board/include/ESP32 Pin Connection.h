@@ -1,0 +1,46 @@
+#ifndef Pin_Connection_h
+#define Pin_Connection_h
+
+// GPIO Pins
+#define ESP32_GPIO_2 2 // RGB_LED_CTRL_PIN
+#define ESP32_GPIO_4 4
+#define ESP32_GPIO_5 5
+#define ESP32_GPIO_12 12
+#define ESP32_GPIO_13 13
+#define ESP32_GPIO_14 14
+#define ESP32_GPIO_15 15
+#define ESP32_GPIO_16 16
+#define ESP32_GPIO_17 17
+#define ESP32_GPIO_25 25
+#define ESP32_GPIO_26 26
+#define ESP32_GPIO_27 27
+#define ESP32_GPIO_32 32
+#define ESP32_GPIO_33 33
+#define ESP32_GPIO_34 34
+#define ESP32_GPIO_35 35
+#define ESP32_GPIO_39 39
+#define ESP32_GPIO_36 36
+
+// Communication Pins
+#define ESP_SPI_SCK 18  // SPI Clock
+#define ESP_SPI_MISO 19 // SPI Master In Slave Out
+#define ESP_SPI_MOSI 23 // SPI Master Out Slave In
+#define ESP_I2C_SDA 21  // I2C Serial Data
+#define ESP_I2C_SCL 22  // T2C Serial Clock
+
+void setup_pins(void)
+{
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               PIN CONNECTIONS                              */
+/* -------------------------------------------------------------------------- */
+
+/* ----------------------------- WS2812B RGB LED ---------------------------- */
+#define RGB_LED_CTRL_PIN ESP32_GPIO_2
+
+/* --------------------------- NEO - 6M GPS MODULE -------------------------- */
+#define NEO_6M_GPS_SENSOR_RX ESP32_GPIO_17
+#define NEO_6M_GPS_SENSOR_TX ESP32_GPIO_16
+
+#endif // Pin_Connection_h
