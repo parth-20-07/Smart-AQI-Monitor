@@ -12,7 +12,7 @@
 // #define PMS_DUST_SENSOR   // https://how2electronics.com/interfacing-pms5003-air-quality-sensor-arduino/
 // #define ZE03_CO_SENSOR    // https://github.com/fega/winsen-ze03-arduino-library
 // #define BH1750_LUX_SENSOR // https://randomnerdtutorials.com/arduino-bh1750-ambient-light-sensor/
-#define NEO_6M_GPS_MODULE // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
+// #define NEO_6M_GPS_MODULE // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
 
 /* ---------------------------- BASIC DEFINITION ---------------------------- */
 #ifdef HTU21D_TEMP_HUMIDITY_SENSOR

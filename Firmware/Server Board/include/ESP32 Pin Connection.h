@@ -4,15 +4,15 @@
 // GPIO Pins
 #define ESP32_GPIO_2 2 // RGB_LED_CTRL_PIN
 #define ESP32_GPIO_4 4
-#define ESP32_GPIO_5 5
+#define ESP32_GPIO_5 5 // CONFIGURATION BUTTON
 #define ESP32_GPIO_12 12
 #define ESP32_GPIO_13 13
 #define ESP32_GPIO_14 14
 #define ESP32_GPIO_15 15
-#define ESP32_GPIO_16 16
-#define ESP32_GPIO_17 17
-#define ESP32_GPIO_25 25
-#define ESP32_GPIO_26 26
+#define ESP32_GPIO_16 16 // HSERIAL_RX
+#define ESP32_GPIO_17 17 // HSERIAL_TX
+#define ESP32_GPIO_25 25 // SERVER_BOARD_CONTROL_PIN
+#define ESP32_GPIO_26 26 // SENSOR_BOARD_CONTROL_PIN
 #define ESP32_GPIO_27 27
 #define ESP32_GPIO_32 32
 #define ESP32_GPIO_33 33
@@ -28,10 +28,6 @@
 #define ESP_I2C_SDA 21  // I2C Serial Data
 #define ESP_I2C_SCL 22  // T2C Serial Clock
 
-void setup_pins(void)
-{
-}
-
 /* -------------------------------------------------------------------------- */
 /*                               PIN CONNECTIONS                              */
 /* -------------------------------------------------------------------------- */
@@ -39,8 +35,21 @@ void setup_pins(void)
 /* ----------------------------- WS2812B RGB LED ---------------------------- */
 #define RGB_LED_CTRL_PIN ESP32_GPIO_2
 
-/* --------------------------- NEO - 6M GPS MODULE -------------------------- */
-#define NEO_6M_GPS_SENSOR_RX ESP32_GPIO_17
-#define NEO_6M_GPS_SENSOR_TX ESP32_GPIO_16
+/* ---------------------- UART INTERBOARD COMMUNICATION --------------------- */
+#define HSERIAL_RX ESP32_GPIO_16
+#define HSERIAL_TX ESP32_GPIO_17
+#define SERVER_BOARD_CONTROL_PIN ESP32_GPIO_25
+#define SENSOR_BOARD_CONTROL_PIN ESP32_GPIO_26
 
+/* ------------------------- WEBSERVER CONFIGURATION ------------------------ */
+#define CONFIGURATION_BUTTON ESP32_GPIO_5
+
+void setup_board_pins(void)
+{
+    Serial.println("Setting up Board Pins");
+    pinMode(SENSOR_BOARD_CONTROL_PIN, OUTPUT);
+    pinMode(SERVER_BOARD_CONTROL_PIN, INPUT);
+    pinMode(CONFIGURATION_BUTTON, INPUT);
+    digitalWrite(SENSOR_BOARD_CONTROL_PIN, HIGH);
+}
 #endif // Pin_Connection_h

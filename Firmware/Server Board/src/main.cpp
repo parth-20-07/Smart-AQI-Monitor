@@ -2,6 +2,8 @@
 #include <RGB_Led_Control.cpp>
 #include <Variable_Declaration.h>
 #include <Sensor_Data_Collection.cpp>
+#include <Serial_InterBoard_Communication.cpp>
+#include <esp32_webserver.cpp>
 
 void deparse_message(String data_msg)
 {
@@ -58,10 +60,18 @@ void deparse_message(String data_msg)
 void setup()
 {
   Serial.begin(115200);
-  // setup_sensors();
-  // setup_leds();
+  setup_leds();
+  setup_sensors();
 }
 
 void loop()
 {
+  if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
+  {
+    String recieved_msg = read_message();
+    deparse_message(recieved_msg);
+  }
+
+  if (digitalRead(CONFIGURATION_BUTTON) == HIGH)
+    launch_webserver();
 }

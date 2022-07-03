@@ -40,6 +40,12 @@ void setup_leds(void)
     for (size_t i = 1; i <= NUM_OF_LEDS; i++) // Turning All Leds Black
         leds[i - 1] = CRGB(BLACK);
     FastLED.show();
+
+    for (size_t i = 1; i <= NUM_OF_LEDS; i++) // Turning individual LEDs White
+    {
+        set_specific_led(i, DIM_WHITE);
+        delay(250);
+    }
     Serial.println("LED Setup Complete");
 }
 

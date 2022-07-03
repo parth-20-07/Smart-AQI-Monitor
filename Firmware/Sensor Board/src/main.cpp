@@ -1,12 +1,14 @@
 #include <Arduino.h>
 #include <Sensor_Data_Collection.cpp>
 #include "Variable_Declaration.h"
+#include "Serial_InterBoard_Communication.cpp"
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("\n\n\n/* ----------------------------- Starting Device ---------------------------- */");
   setup_sensors();
+  setup_board_pins();
   Serial.println("/* -------------------------- Device Setup Complete ------------------------- */\n");
 }
 
@@ -33,6 +35,7 @@ void loop()
     msg += ",#";
     Serial.println(msg);
     Serial.println();
+    send_message(msg);
     sensor_data_collection_millis = millis();
   }
 }

@@ -5,23 +5,27 @@
 #include <ESPAsyncWebServer.h>
 #include "HTML_PAGE.h"
 #include "Variable_Declaration.h"
-#include "Display_Control.cpp"
 
 /* ---------------------------- BASIC DEFINITION ---------------------------- */
 AsyncWebServer server(80);
 const char *PARAM_INPUT_1 = "ssid";
 const char *PARAM_INPUT_2 = "password";
-// const char *PARAM_INPUT[NUMBER_OF_PARAMS][30] = {
-String PARAM_INPUT[NUMBER_OF_PARAMS] = {
+String PARAM_INPUT[NUM_OF_PARAMS] = {
     "min_temp",
     "max_temp",
     "min_humi",
     "max_humi",
-    "min_lux",
-    "max_lux",
     "min_co2",
     "max_co2",
+    "min_co",
+    "max_co",
+    "min_pm_ae_2.5",
+    "max_pm_ae_2.5",
+    "min_lux",
+    "max_lux",
 };
+#define WEBSERVER_SSID "Smart AQI Monitor"
+#define WEBSERVER_PASSWORD "123456789"
 
 /* --------------------------- FUNCTION DEFINITION -------------------------- */
 /**
@@ -89,7 +93,7 @@ void launch_webserver(void)
             password[i] = inputMessage[i];
     }
 
-    for (size_t i = 0; i < NUMBER_OF_PARAMS; i++)
+    for (size_t i = 0; i < NUM_OF_PARAMS; i++)
         if (request->hasParam(PARAM_INPUT[i]))
         {
             inputMessage = request->getParam(PARAM_INPUT[i])->value();
@@ -109,15 +113,7 @@ void launch_webserver(void)
     while (1)
     {
         yield();
-
-        if (((millis() - data_refresh_last_millis) > 1000) || (first_data_load))
-        {
-            load_alert_data_on_configuration_screen();
-            data_refresh_last_millis = millis();
-            first_data_load = false;
-        }
-        String msg = read_nextion_input_message();
-        if (msg == "back")
-            break;
+        if (digitalRead(CONFIGURATION_BUTTON) == HIGH)
+            return;
     }
 }

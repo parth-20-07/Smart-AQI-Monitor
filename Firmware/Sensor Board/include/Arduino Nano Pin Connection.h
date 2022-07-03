@@ -8,12 +8,12 @@
 #define NANO_GPIO_5 5 // ZE03 CO SENSOR TX
 #define NANO_GPIO_6 6 // ZH06 LASER DUST SENSOR TX
 #define NANO_GPIO_7 7 // ZH06 LASER DUST SENSOR RX
-#define NANO_GPIO_8 8
-#define NANO_GPIO_9 9
+#define NANO_GPIO_8 8 // hSerial RX
+#define NANO_GPIO_9 9 // hSerial TX
 #define NANO_GPIO_10 10
 #define NANO_AI_0 A0 // ZE03 CO SENSOR VOUT
-#define NANO_AI_1 A1
-#define NANO_AI_2 A2
+#define NANO_AI_1 A1 // SERVER BOARD CONTROL PIN
+#define NANO_AI_2 A2 // SENSOR BOARD CONTROL PIN
 #define NANO_AI_3 A3
 #define NANO_AI_6 A6
 #define NANO_AI_7 A7
@@ -50,7 +50,17 @@
 /* ---------------------------- BH1750 LUX SENSOR --------------------------- */
 // I2C Connection
 
-/* --------------------------- NEO - 6M GPS MODULE -------------------------- */
-#define NEO_6M_GPS_SENSOR_RX
-#define NEO_6M_GPS_SENSOR_TX
+/* -------------------- UART COMMUNICATION BETWEEN BOARDS ------------------- */
+#define HSERIAL_RX NANO_GPIO_8
+#define HSERIAL_TX NANO_GPIO_9
+#define SERVER_BOARD_CONTROL_PIN NANO_AI_1
+#define SENSOR_BOARD_CONTROL_PIN NANO_AI_2
+
+void setup_board_pins(void)
+{
+    Serial.println("Setting up Board Pins");
+    pinMode(SENSOR_BOARD_CONTROL_PIN, INPUT);
+    pinMode(SERVER_BOARD_CONTROL_PIN, OUTPUT);
+    digitalWrite(SERVER_BOARD_CONTROL_PIN, HIGH);
+}
 #endif
