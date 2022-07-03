@@ -4,7 +4,7 @@
 // Reference: (ReadLines Library): https://github.com/mykeels/ReadLines/blob/master/examples/print-line-and-index/print-line-only.ino
 #include "FS.h"
 #include "SD.h"
-#include "Pin_Connection.h"
+#include "ESP32 Pin Connection.h"
 #include "Variable_Declaration.h"
 
 /* -------------------------- FUNCTION DECLARATION -------------------------- */
@@ -188,7 +188,7 @@ void appendFile(fs::FS &fs, String str_path, String msg)
  */
 String read_single_line_data_from_sd_card(String file_path)
 {
-    Serial.println("Reading Historical Data");
+    Serial.println("Reading Data");
     String send_string;
     File printFile = SD.open(file_path);
     if (!printFile)
@@ -201,20 +201,20 @@ String read_single_line_data_from_sd_card(String file_path)
     return send_string;
 }
 
-void read_data_from_sd_card(void)
-{
-    Serial.println("Reading Historical Data");
-    File printFile = SD.open(file_path);
-    if (!printFile)
-        Serial.print("The text file cannot be opened");
-    int lineIndex = 1;
-    while (printFile.available())
-    {
-        String send_string = printFile.readStringUntil('\n');
-        Serial.println((String)lineIndex + " : " + send_string);
-        lineIndex++;
-    }
-    printFile.close();
-}
+// void read_data_from_sd_card(void)
+// {
+//     Serial.println("Reading Historical Data");
+//     File printFile = SD.open(file_path);
+//     if (!printFile)
+//         Serial.print("The text file cannot be opened");
+//     int lineIndex = 1;
+//     while (printFile.available())
+//     {
+//         String send_string = printFile.readStringUntil('\n');
+//         Serial.println((String)lineIndex + " : " + send_string);
+//         lineIndex++;
+//     }
+//     printFile.close();
+// }
 
 #endif

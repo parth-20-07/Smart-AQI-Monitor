@@ -25,5 +25,19 @@ uint16_t params_range[NUM_OF_PARAMS];
 #define SSID_CHAR_LENGTH 50
 #define PASSWORD_CHAR_LENGTH 100
 char ssid[SSID_CHAR_LENGTH], password[PASSWORD_CHAR_LENGTH];
+bool aws_connect_flag = false;
+bool backlog_file_available = false;
+uint32_t last_aws_upload;
+#define AWS_UPLOAD_TIME 5
+
+/* ------------------------- MICRO SD CONFIGURATION ------------------------- */
+#define SSID_FILE "/ssid.txt"
+#define PASSWORD_FILE "/pwd.txt"
+#define BACKLOG_FILE "/backup.txt"
+
+/* ------------------------- TIME CONFIGURATION DATA ------------------------ */
+uint16_t year;
+uint8_t month, date, hour, minutes, seconds;
+String day, time;
 
 #endif // Variable_Declaration_h

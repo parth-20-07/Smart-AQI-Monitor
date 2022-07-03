@@ -15,7 +15,7 @@ WiFiClientSecure net = WiFiClientSecure();
 MQTTClient client = MQTTClient(256);
 
 /* --------------------------- FUNCTION DEFINITION -------------------------- */
-void aws_setup(void);
+bool aws_setup(void);
 void messageReceived(String &topic, String &payload);
 void read_aws_backlog_file();
 void handleEachAWSBacklogLine(char line[], int lineIndex);
@@ -25,19 +25,16 @@ void connectToMqtt(bool nonBlocking);
 void checkWiFiThenMQTT(void);
 void checkWiFiThenMQTTNonBlocking(void);
 void checkWiFiThenReboot(void);
-bool sendData(String cmd, String date, String time, String nodeid, String node_type, float temp, uint8_t humiditiy, uint16_t lux, uint16_t co2, uint8_t battery_percentage);
+bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux);
 
 /* -------------------------- FUNCTION DECLARATION -------------------------- */
 /**
  * @brief Setup AWS
  *
  */
-void aws_setup(void)
+bool aws_setup(void)
 {
     Serial.println("Setting up AWS");
-
-    Serial.println("Setting up AWS Connection");
-    delay(1000);
 
     // Configure WiFiClientSecure to use the AWS IoT device credentials
     net.setCACert(AWS_CERT_CA);
@@ -56,11 +53,12 @@ void aws_setup(void)
     if (!client.connected())
     {
         Serial.println("AWS IoT Timeout!");
-        return;
+        return false;
     }
     client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC); // Subscribe to a topic
     Serial.println("AWS IoT Connected!");
     delay(10);
+    return true;
 }
 
 /**
@@ -198,12 +196,21 @@ void checkWiFiThenReboot(void)
 }
 
 /**
- * @brief Upload data to AWS for periodic box updates
+ * @brief
  *
- * @param box_id
- * @param message
+ * @param cmd
+ * @param date
+ * @param time
+ * @param temp
+ * @param humiditiy
+ * @param co2
+ * @param co
+ * @param pm_ae_2_5
+ * @param lux
+ * @return true
+ * @return false
  */
-bool sendData(String cmd, String date, String time, String nodeid, String node_type, float temp, uint8_t humiditiy, uint16_t lux, uint16_t co2, uint8_t battery_percentage)
+bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux)
 {
     bool send_success = false;
     // Update to AWS
@@ -215,20 +222,14 @@ bool sendData(String cmd, String date, String time, String nodeid, String node_t
         // Reference:https://github.com/bblanchon/ArduinoJson/blob/6.x/examples/JsonGeneratorExample/JsonGeneratorExample.ino
         Serial.println("Sending to AWS");
         StaticJsonDocument<500> doc;
-        doc["cmd"] == cmd;
         doc["date"] = date;
         doc["time"] = time;
-        if (cmd == "live")
-        {
-            doc["nodeid"] = nodeid;
-            doc["node_type"] = node_type;
-        }
         doc["temp"] = temp;
         doc["humiditiy"] = humiditiy;
-        doc["lux"] = lux;
         doc["co2"] = co2;
-        if (cmd == "live")
-            doc["batt"] = battery_percentage;
+        doc["co"] = co;
+        doc["pm_ae_2_5"] = pm_ae_2_5;
+        doc["lux"] = lux;
 
         serializeJson(doc, Serial);
         serializeJsonPretty(doc, Serial);

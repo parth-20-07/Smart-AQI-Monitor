@@ -2,12 +2,11 @@
 #define HTML_PAGE_H
 // HTML web page to handle input fields
 const char index_html[] PROGMEM = R"rawliteral(
-
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>Gateway Configuration Page</title>
+    <title>Smart AQI Configuration Page</title>
     <meta name="viewport" http-equiv="Content-Type"
         content="width=device-width, initial-scale=1 text/html; charset=utf-8">
     <style>
@@ -36,7 +35,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <body>
     <center>
         <form action="/get">
-            <h2 align="center">Gateway Configuration Form</h2>
+            <h2 align="center">Smart AQI Configuration Form</h2>
 
             <h3>Enter Wi-Fi Details
 
@@ -76,27 +75,45 @@ const char index_html[] PROGMEM = R"rawliteral(
                         <input type="number" name="max_humi" placeholder="Maximum" min="0" max="100" />
                     </td>
                 </tr>
-
-                <tr>
-                    <td align="right">Luminosity (lux):</td>
-                    <td>
-                        <input type="number" name="min_lux" placeholder="Minimum" min="1" max="40000" />
-                    </td>
-                    <td>
-                        <input type="number" name="max_lux" placeholder="Maximum" min="1" max="40000" />
-                    </td>
-                </tr>
-
                 <tr>
                     <td align="right">Carbondioxide (ppm):</td>
                     <td>
-                        <input type="number" name="min_co2" placeholder="Minimum" min="400" max="5000" />
+                        <input type="number" name="min_co2" placeholder="Minimum" min="0" max="5000" />
                     </td>
                     <td>
-                        <input type="number" name="max_co2" placeholder="Maximum" min="400" max="5000" />
+                        <input type="number" name="max_co2" placeholder="Maximum" min="0" max="5000" />
                     </td>
                 </tr>
 
+                <tr>
+                    <td align="right">Carbonmonoxide (ppm):</td>
+                    <td>
+                        <input type="number" name="min_co" placeholder="Minimum" min="0" max="5000" />
+                    </td>
+                    <td>
+                        <input type="number" name="max_co" placeholder="Maximum" min="0" max="5000" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right">PM AE 2.5 (ug/m3):</td>
+                    <td>
+                        <input type="number" name="min_pm_ae_2.5" placeholder="Minimum" min="0" max="5000" />
+                    </td>
+                    <td>
+                        <input type="number" name="max_pm_ae_2.5" placeholder="Maximum" min="0" max="5000" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right">Light Intensity (lx):</td>
+                    <td>
+                        <input type="number" name="min_lux" placeholder="Minimum" min="0" max="5000" />
+                    </td>
+                    <td>
+                        <input type="number" name="max_lux" placeholder="Maximum" min="0" max="5000" />
+                    </td>
+                </tr>
             </table>
             <br />
             <input type="submit" value="Submit" />
@@ -105,6 +122,5 @@ const char index_html[] PROGMEM = R"rawliteral(
 </body>
 
 </html>
-
 )rawliteral";
 #endif

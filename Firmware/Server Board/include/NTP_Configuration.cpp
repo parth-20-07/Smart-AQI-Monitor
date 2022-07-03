@@ -12,22 +12,25 @@ const long gmtOffset_sec = 19800; // +5:30 = (5*60*60) + (30*60) = 19800
 const int daylightOffset_sec = 0; // India doesn't observe DayLight Saving
 
 /* --------------------------- FUNCTION DEFINITION -------------------------- */
-void connect_to_ntp(void);
+bool connect_to_ntp(void);
 bool printLocalTime(void);
 
 /* -------------------------- FUNCTION DECLARATION -------------------------- */
-void connect_to_ntp(void)
+bool connect_to_ntp(void)
 {
     Serial.println("Connecting to NTP");
     if (WiFi.status() == WL_CONNECTED)
     {
         Serial.println("Setting up NTP Server");
         configTime(gmtOffset_sec, daylightOffset_sec, ntpServer); // Configure NTP
-        printLocalTime();                                         // Fetching time from NTP
+        if (printLocalTime())
+            return true;
+        else
+            return false;
     }
     else
         Serial.println("WiFi Not Connected");
-    return;
+    return false;
 }
 
 /**
