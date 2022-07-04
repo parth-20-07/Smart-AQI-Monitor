@@ -157,7 +157,39 @@ void read_backlog_file(void)
   backlog_file_available = false;
 }
 
-/* ------------------------ Server Related Functions ------------------------ */
+/* --------------------------- LED Alert Function --------------------------- */
+void set_led_alerts(void)
+{
+  if ((temperature < params_range[0]) || (temperature > params_range[1]))
+    set_specific_led(1, RED);
+  else
+    set_specific_led(1, GREEN);
+
+  if ((humidity < params_range[2]) || (humidity > params_range[3]))
+    set_specific_led(2, RED);
+  else
+    set_specific_led(2, GREEN);
+
+  if ((carbondioxide < params_range[4]) || (carbondioxide > params_range[5]))
+    set_specific_led(3, RED);
+  else
+    set_specific_led(3, GREEN);
+
+  if ((carbonmonoxide < params_range[6]) || (carbonmonoxide > params_range[7]))
+    set_specific_led(4, RED);
+  else
+    set_specific_led(4, GREEN);
+
+  if ((pm_ae_2_5 < params_range[8]) || (pm_ae_2_5 > params_range[9]))
+    set_specific_led(5, RED);
+  else
+    set_specific_led(5, GREEN);
+
+  if ((lux < params_range[10]) || (lux > params_range[11]))
+    set_specific_led(6, RED);
+  else
+    set_specific_led(6, GREEN);
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                  Main Code                                 */
@@ -187,6 +219,7 @@ void loop()
     {
       printLocalTime();
       deparse_message(true, recieved_msg);
+      set_led_alerts();
       day = (String)year + "/" + (String)month + "/" + (String)date;
       time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
       if (!sendData(day, time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux)) // True if error sending data
@@ -204,8 +237,8 @@ void loop()
   if (!aws_connect_flag) // Connect to AWS if not connected
     aws_setup();
 
-  if (backlog_file_available)
-    if ((millis() - last_aws_upload) > (AWS_UPLOAD_TIME * 60000)) // To check the backlog and upload any data which is not uploaded
+  if (backlog_file_available) // To check the backlog and upload any data which is not uploaded
+    if ((millis() - last_aws_upload) > (AWS_UPLOAD_TIME * 60000))
     {
       read_backlog_file();
       last_aws_upload = millis();
