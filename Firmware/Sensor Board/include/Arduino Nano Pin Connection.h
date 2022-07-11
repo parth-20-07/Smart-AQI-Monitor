@@ -12,11 +12,11 @@
 #define NANO_GPIO_9 9 // hSerial TX
 #define NANO_GPIO_10 10
 #define NANO_AI_0 A0 // ZE03 CO SENSOR VOUT
-#define NANO_AI_1 A1 // SERVER BOARD CONTROL PIN
-#define NANO_AI_2 A2 // SENSOR BOARD CONTROL PIN
+#define NANO_AI_1 A1 // NEO-6M GPS SENSOR RX
+#define NANO_AI_2 A2 // NEO-6M GPS SENSOR TX
 #define NANO_AI_3 A3
-#define NANO_AI_6 A6
-#define NANO_AI_7 A7
+#define NANO_AI_6 A6 // SERVER BOARD CONTROL PIN
+#define NANO_AI_7 A7 // SENSOR BOARD CONTROL PIN
 
 // COMMUNICATION PINS
 #define SERIAL_TX 0
@@ -50,11 +50,15 @@
 /* ---------------------------- BH1750 LUX SENSOR --------------------------- */
 // I2C Connection
 
+/* ---------------------------- NEO_6M_GPS_MODULE --------------------------- */
+#define NEO_6M_GPS_SENSOR_RX NANO_AI_1
+#define NEO_6M_GPS_SENSOR_TX NANO_AI_2
+
 /* -------------------- UART COMMUNICATION BETWEEN BOARDS ------------------- */
 #define HSERIAL_RX NANO_GPIO_8
 #define HSERIAL_TX NANO_GPIO_9
-#define SERVER_BOARD_CONTROL_PIN NANO_AI_1
-#define SENSOR_BOARD_CONTROL_PIN NANO_AI_2
+#define SERVER_BOARD_CONTROL_PIN NANO_AI_6
+#define SENSOR_BOARD_CONTROL_PIN NANO_AI_7
 
 void setup_board_pins(void)
 {

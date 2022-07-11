@@ -12,7 +12,7 @@
 #define PMS_DUST_SENSOR   // https://how2electronics.com/interfacing-pms5003-air-quality-sensor-arduino/
 #define ZE03_CO_SENSOR    // https://github.com/fega/winsen-ze03-arduino-library
 #define BH1750_LUX_SENSOR // https://randomnerdtutorials.com/arduino-bh1750-ambient-light-sensor/
-// #define NEO_6M_GPS_MODULE // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
+#define NEO_6M_GPS_MODULE // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
 
 /* ---------------------------- BASIC DEFINITION ---------------------------- */
 #ifdef HTU21D_TEMP_HUMIDITY_SENSOR
@@ -136,7 +136,6 @@ void setup_sensors(void)
 
 #ifdef NEO_6M_GPS_MODULE
     Serial.println("Setting up Neo-6M GPS Sensor");
-    gpsSerial.begin(9600);
 #endif // NEO_6M_GPS_MODULE
 }
 
@@ -267,24 +266,36 @@ String collect_lux_values(void)
 #ifdef NEO_6M_GPS_MODULE
 String collect_gps_values(void)
 {
-    uint8_t max_trials = 10;
-    for (uint8_t trials = 0; trials < max_trials; trials++)
+    Serial.print("Reading Neo-6M GPS");
+    gpsSerial.begin(9600);
+    delay(1000);
+    String return_msg = "";
+    while (!gpsSerial.available())
     {
-        if (gpsSerial.available() > 0)
+        delay(50);
+        Serial.print(".");
+    }
+    Serial.println();
+    Serial.println("GPS Connected!");
+    while (gpsSerial.available() > 0)
+        if (gps.encode(gpsSerial.read()))
         {
-            gps.encode(gpsSerial.read());
-            if (gps.location.isUpdated())
+            Serial.println("GPS Encode Successful");
+            if (gps.location.isValid())
             {
-                double latitude = gps.location.lat();
-                double longitude = gps.location.lng();
+                float latitude = gps.location.lat();
+                float longitude = gps.location.lng();
                 Serial.println("Latitude: " + (String)latitude);
                 Serial.println("Longitude: " + (String)longitude);
-                return;
+                return_msg = ",X:" + (String)latitude + ",Y:" + (String)longitude;
             }
+            else
+                Serial.println("GPS Fetch Failure");
         }
-    }
-    Serial.println("GPS Fetch Failure");
-    return;
+        else
+            Serial.println("GPS Encode Failed");
+    gpsSerial.end();
+    return return_msg;
 }
 #endif // NEO_6M_GPS_MODULE
 
