@@ -23,7 +23,7 @@ void loop()
    * M => Carbonmonoxide
    * D => Dust PM AE 2.5
    * L => Light Intensity
-   * O => Ozone
+   * V => Volatile Organic Components
    */
   msg += collect_temperature_humidity_and_pressure_values();
   delay(500);
@@ -31,13 +31,11 @@ void loop()
   delay(500);
   msg += collect_co_sensor_values();
   delay(500);
-  // msg += collect_o3_sensor_values();
-  delay(500);
   msg += collect_dust_sensor_values();
   delay(500);
   msg += collect_lux_values();
   delay(500);
-  msg += collect_gps_values();
+  msg += collect_voc_values();
   delay(500);
   msg += ",#";
   Serial.println(msg);

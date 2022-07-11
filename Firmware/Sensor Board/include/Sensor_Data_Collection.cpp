@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Arduino Nano Pin Connection.h"
 
-#define HTU21D_TEMP_HUMIDITY_SENSOR // https://learn.sparkfun.com/tutorials/htu21d-humidity-sensor-hookup-guide
+// #define HTU21D_TEMP_HUMIDITY_SENSOR // https://learn.sparkfun.com/tutorials/htu21d-humidity-sensor-hookup-guide
 // #define BME280_TEMP_HUMIDITY_PRESSURE_SENSOR // https://randomnerdtutorials.com/bme280-sensor-arduino-pressure-temperature-humidity/
 // #define MHZ19C_CO2_SENSOR                    // https://github.com/strange-v/MHZ19
 #define MHZ16C_CO2_SENSOR // https://github.com/datphys/MHZ16-CO2-sensor
@@ -12,9 +12,17 @@
 #define PMS_DUST_SENSOR   // https://how2electronics.com/interfacing-pms5003-air-quality-sensor-arduino/
 #define ZE03_CO_SENSOR    // https://github.com/fega/winsen-ze03-arduino-library
 #define BH1750_LUX_SENSOR // https://randomnerdtutorials.com/arduino-bh1750-ambient-light-sensor/
-#define NEO_6M_GPS_MODULE // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
+// #define NEO_6M_GPS_MODULE         // https://randomnerdtutorials.com/guide-to-neo-6m-gps-module-with-arduino/
+#define ADAFRUIT_SGP40_VOC_MODULE // https://learn.adafruit.com/adafruit-sgp40/arduino
 
 /* ---------------------------- BASIC DEFINITION ---------------------------- */
+#ifdef ADAFRUIT_SGP40_VOC_MODULE
+#define HTU21D_TEMP_HUMIDITY_SENSOR
+#include "Adafruit_SGP40.h"
+Adafruit_SGP40 voc_sensor;
+float temperature, humidity;
+#endif // ADAFRUIT_SGP40_VOC_MODULE
+
 #ifdef HTU21D_TEMP_HUMIDITY_SENSOR
 #include <Wire.h>
 #include "HTU21D.h"
@@ -79,7 +87,6 @@ TinyGPSPlus gps; // The TinyGPS++ object
 /* -------------------------------------------------------------------------- */
 /*                             FUNCTION DEFINITION                            */
 /* -------------------------------------------------------------------------- */
-
 /* ------------------------------ SENSOR SETUP ------------------------------ */
 void setup_sensors(void)
 {
@@ -137,6 +144,12 @@ void setup_sensors(void)
 #ifdef NEO_6M_GPS_MODULE
     Serial.println("Setting up Neo-6M GPS Sensor");
 #endif // NEO_6M_GPS_MODULE
+
+#ifndef ADAFRUIT_SGP40_VOC_MODULE
+    Serial.println("Setting up SGP40 VOC Sensor");
+    if (!voc_sensor.begin())
+        Serial.println("SGP40 sensor not found :(");
+#endif // ADAFRUIT_SGP40_VOC_MODULE
 }
 
 /* --------------------------- COLLECT SENSOR DATA -------------------------- */
@@ -144,8 +157,10 @@ void setup_sensors(void)
 String collect_temperature_humidity_and_pressure_values(void)
 {
     Serial.println("Reading HTU21D");
-    uint8_t humd = temperature_and_humidity_sensor.readHumidity();
-    uint8_t temp = temperature_and_humidity_sensor.readTemperature();
+    humidity = temperature_and_humidity_sensor.readHumidity();
+    temperature = temperature_and_humidity_sensor.readTemperature();
+    uint8_t temp = (uint8_t)temperature;
+    uint8_t humd = (uint8_t)humidity;
     // Serial.println("Temperature: " + (String)temp + "C");
     // Serial.println("Humidity: " + (String)humd + "%");
     return ("T:" + (String)temp + ",H:" + (String)humd);
@@ -298,5 +313,16 @@ String collect_gps_values(void)
     return return_msg;
 }
 #endif // NEO_6M_GPS_MODULE
+
+#ifdef ADAFRUIT_SGP40_VOC_MODULE
+String collect_voc_values(void)
+{
+    Serial.println("Reading SGP40");
+    collect_temperature_humidity_and_pressure_values();
+    float voc_index = voc_sensor.measureVocIndex(temperature, humidity);
+    Serial.println("VOC: " + (String)voc_index + " voc_index");
+    return (",V:" + (String)voc_index);
+}
+#endif // ADAFRUIT_SGP40_VOC_MODULE
 
 #endif // Sensor_Data_Collection_cpp
