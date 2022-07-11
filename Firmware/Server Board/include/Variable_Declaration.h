@@ -28,7 +28,7 @@ char ssid[SSID_CHAR_LENGTH], password[PASSWORD_CHAR_LENGTH];
 bool aws_connect_flag = false;
 bool backlog_file_available = false;
 uint32_t last_aws_upload;
-#define AWS_UPLOAD_TIME 5
+#define AWS_UPLOAD_TIME 1
 
 /* ------------------------- MICRO SD CONFIGURATION ------------------------- */
 #define SSID_FILE "/ssid.txt"
@@ -38,6 +38,6 @@ uint32_t last_aws_upload;
 /* ------------------------- TIME CONFIGURATION DATA ------------------------ */
 uint16_t year;
 uint8_t month, date, hour, minutes, seconds;
-String day, time;
+String formatted_day, formatted_time;
 
 #endif // Variable_Declaration_h

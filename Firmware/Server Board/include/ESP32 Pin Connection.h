@@ -3,8 +3,8 @@
 
 // GPIO Pins
 #define ESP32_GPIO_2 2 // RGB_LED_CTRL_PIN
-#define ESP32_GPIO_4 4 // SD CHIP SELECT
-#define ESP32_GPIO_5 5 // CONFIGURATION BUTTON
+#define ESP32_GPIO_4 4 // CONFIGURATION BUTTON
+#define ESP32_GPIO_5 5 // SD CHIP SELECT
 #define ESP32_GPIO_12 12
 #define ESP32_GPIO_13 13
 #define ESP32_GPIO_14 14
@@ -42,10 +42,10 @@
 #define SENSOR_BOARD_CONTROL_PIN ESP32_GPIO_26
 
 /* ------------------------- WEBSERVER CONFIGURATION ------------------------ */
-#define CONFIGURATION_BUTTON ESP32_GPIO_5
+#define CONFIGURATION_BUTTON ESP32_GPIO_4
 
 /* --------------------------- MICROSD CONNECTION --------------------------- */
-#define SD_CHIP_SELECT ESP32_GPIO_4
+#define SD_CHIP_SELECT ESP32_GPIO_5
 
 void setup_board_pins(void)
 {

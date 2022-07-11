@@ -56,9 +56,9 @@ bool printLocalTime(void)
     minutes = timeinfo.tm_min;
     seconds = timeinfo.tm_sec;
     Serial.println("NTP Update Successful");
-    String day = (String)year + "/" + (String)month + "/" + (String)date;
-    String time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
-    Serial.println("Time from NTP: " + day + ' ' + time);
+    String formatted_day = (String)year + "/" + (String)month + "/" + (String)date;
+    String formatted_time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
+    Serial.println("Time from NTP: " + formatted_day + ' ' + formatted_time);
     delay(10);
     return true;
 }

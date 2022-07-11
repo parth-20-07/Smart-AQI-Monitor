@@ -57,6 +57,8 @@ bool aws_setup(void)
     }
     client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC); // Subscribe to a topic
     Serial.println("AWS IoT Connected!");
+    Serial.println("AWS Thingname: " + (String)THINGNAME);
+    Serial.println("AWS Publish Topic: " + (String)AWS_IOT_PUBLISH_TOPIC);
     delay(10);
     return true;
 }
@@ -212,6 +214,7 @@ void checkWiFiThenReboot(void)
  */
 bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux)
 {
+
     bool send_success = false;
     // Update to AWS
     if (!client.connected())
@@ -231,7 +234,6 @@ bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_
         doc["pm_ae_2_5"] = pm_ae_2_5;
         doc["lux"] = lux;
 
-        serializeJson(doc, Serial);
         serializeJsonPretty(doc, Serial);
         char shadow[measureJson(doc) + 1];
         serializeJson(doc, shadow, sizeof(shadow));

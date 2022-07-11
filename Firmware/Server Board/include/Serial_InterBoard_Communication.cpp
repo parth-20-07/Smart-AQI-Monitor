@@ -37,6 +37,7 @@ String read_message(void)
 {
     Serial.println("Trying to read msg");
     hSerial.begin(9600);
+    delay(500);
     digitalWrite(SENSOR_BOARD_CONTROL_PIN, LOW);
     delay(50);
     String msg = "";
@@ -44,9 +45,10 @@ String read_message(void)
         msg = hSerial.readStringUntil('#');
     Serial.println("Recieved Message: " + msg);
     while (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW)
-        ;
+        Serial.print(".");
     delay(10);
     digitalWrite(SENSOR_BOARD_CONTROL_PIN, HIGH);
+    Serial.println("Read Complete");
     delay(10);
     hSerial.end();
     return msg;

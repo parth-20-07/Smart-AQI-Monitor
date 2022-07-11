@@ -35,11 +35,13 @@ void loop()
   delay(500);
   msg += collect_lux_values();
   delay(500);
-  msg += collect_voc_values();
+  // msg += collect_voc_values();
   delay(500);
-  msg += ",#";
   Serial.println(msg);
   Serial.println();
-  send_message(msg);
+  uint32_t last_millis = millis();
+  while ((millis() - last_millis) < (SENSOR_DATA_REFRESH_TIME_IN_SECONDS * 1000))
+    if (send_message(msg))
+      break;
   delay(SENSOR_DATA_REFRESH_TIME_IN_SECONDS * 1000);
 }

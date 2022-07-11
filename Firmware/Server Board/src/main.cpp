@@ -26,6 +26,7 @@ void fetch_new_values_from_server(void)
     deleteFile(SD, file_path);
     writeFile(SD, file_path, (String)params_range[i]);
   }
+  ESP.restart();
 }
 
 /* ------------------------ Data Processing Functions ----------------------- */
@@ -64,6 +65,9 @@ void deparse_message(bool live_data, String data_msg)
       }
     }
 
+    for (size_t i = 0; i < NUM_OF_PARAMS; i++)
+      Serial.println("Param " + (String)i + " = " + data_params[i]);
+
     char param_values[6][10]; // T,H,C,M,D,L
     {
       char token = ':';
@@ -93,9 +97,9 @@ void deparse_message(bool live_data, String data_msg)
       if (data_msg[i] == token)
       {
         if (count == 0)
-          day = data_msg.substring(0, i);
+          formatted_day = data_msg.substring(0, i);
         else if (count == 1)
-          time = data_msg.substring(last_index_pos, i);
+          formatted_time = data_msg.substring(last_index_pos, i);
         else if (count == 2)
         {
           String msg = data_msg.substring(last_index_pos, i);
@@ -138,6 +142,7 @@ void read_backlog_file(void)
 {
   Serial.println("Reading Historical Data");
   File printFile = SD.open(BACKLOG_FILE);
+  bool complete_send_success = true;
   if (!printFile)
   {
     Serial.print("The text file cannot be opened");
@@ -149,17 +154,28 @@ void read_backlog_file(void)
     String send_string = printFile.readStringUntil('\n');
     Serial.println((String)lineIndex + " : " + send_string);
     deparse_message(false, send_string);
-    sendData(day, time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux);
+    if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux))
+      ;
+    {
+      Serial.println("Send Failure");
+      complete_send_success = false;
+      break;
+    }
     lineIndex++;
+    delay(50);
   }
   printFile.close();
-  deleteFile(SD, BACKLOG_FILE);
-  backlog_file_available = false;
+  if (complete_send_success)
+  {
+    deleteFile(SD, BACKLOG_FILE);
+    backlog_file_available = false;
+  }
 }
 
 /* --------------------------- LED Alert Function --------------------------- */
 void set_led_alerts(void)
 {
+  Serial.println("Setting LED Alerts");
   if ((temperature < params_range[0]) || (temperature > params_range[1]))
     set_specific_led(1, RED);
   else
@@ -212,35 +228,39 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
+
+  // if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
   {
-    String recieved_msg = read_message();
+    String recieved_msg = "T:" + (String)random(0, 100) + ",H:" + (String)random(0, 100) + ",C:" + (String)random(0, 100) + ",M:" + (String)random(0, 100) + ",D:" + (String)random(0, 100) + ",L:" + (String)random(0, 100) + ",";
+    // String recieved_msg = read_message();
     if (recieved_msg != "")
     {
+      Serial.println("\n\n=======================================");
+      Serial.println("Incoming Msg: " + recieved_msg);
       printLocalTime();
-      deparse_message(true, recieved_msg);
       set_led_alerts();
-      day = (String)year + "/" + (String)month + "/" + (String)date;
-      time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
-      if (!sendData(day, time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux)) // True if error sending data
-      {
-        String backup_msg = day + "," + time + "T:" + (String)temperature + "H:" + (String)humidity + "C:" + (String)carbondioxide + "M:" + (String)carbonmonoxide + "D:" + (String)pm_ae_2_5 + "L:" + (String)lux;
-        appendFile(SD, BACKLOG_FILE, backup_msg);
-        backlog_file_available = true;
-      }
+      formatted_day = (String)year + "/" + (String)month + "/" + (String)date;
+      formatted_time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
+      String backup_msg = formatted_day + "," + formatted_time + ",T:" + (String)temperature + ",H:" + (String)humidity + ",C:" + (String)carbondioxide + ",M:" + (String)carbonmonoxide + ",D:" + (String)pm_ae_2_5 + ",L:" + (String)lux + ",";
+      appendFile(SD, BACKLOG_FILE, backup_msg);
+      backlog_file_available = true;
     }
   }
 
   if (digitalRead(CONFIGURATION_BUTTON) == HIGH) // Launch Webserver to update Limits
     fetch_new_values_from_server();
 
-  if (!aws_connect_flag) // Connect to AWS if not connected
-    aws_setup();
-
   if (backlog_file_available) // To check the backlog and upload any data which is not uploaded
     if ((millis() - last_aws_upload) > (AWS_UPLOAD_TIME * 60000))
     {
-      read_backlog_file();
+      if (!aws_connect_flag) // Connect to AWS if not connected
+        aws_setup();
+
+      if (aws_connect_flag)
+        read_backlog_file();
+
       last_aws_upload = millis();
     }
+
+  delay(2000);
 }

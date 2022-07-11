@@ -8,8 +8,8 @@ bool send_message(String msg)
 {
     Serial.println("Trying to send msg");
     hSerial.begin(9600);
+    delay(500);
     digitalWrite(SERVER_BOARD_CONTROL_PIN, LOW);
-    delay(50);
     uint32_t lastMillis = millis();
     while ((millis() - lastMillis) < 2000)
         if (digitalRead(SENSOR_BOARD_CONTROL_PIN) == LOW)
@@ -17,7 +17,7 @@ bool send_message(String msg)
     if (digitalRead(SENSOR_BOARD_CONTROL_PIN) == HIGH)
     {
         Serial.println("Send Failure");
-        digitalWrite(SENSOR_BOARD_CONTROL_PIN, HIGH);
+        digitalWrite(SERVER_BOARD_CONTROL_PIN, HIGH);
         hSerial.end();
         return false;
     }
@@ -30,10 +30,11 @@ bool send_message(String msg)
         if (hSerial.available())
             hSerial.write(char_msg[i]);
     Serial.println("Send Success");
-    digitalWrite(SENSOR_BOARD_CONTROL_PIN, HIGH);
+    digitalWrite(SERVER_BOARD_CONTROL_PIN, HIGH);
     hSerial.end();
     return true;
 }
+
 String read_message(void)
 {
     Serial.println("Trying to read msg");

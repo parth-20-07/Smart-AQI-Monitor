@@ -124,15 +124,15 @@ String readFile(fs::FS &fs, const char *path)
  */
 void writeFile(fs::FS &fs, String str_path, String msg)
 {
-    msg += "\n";
+    Serial.println("Writing file: " + (String)str_path);
+    Serial.println("Write Message: " + (String)msg);
+
     char path[str_path.length()];
     strcpy(path, str_path.c_str());
 
+    msg += "\n";
     char message[msg.length()];
     strcpy(message, msg.c_str());
-
-    Serial.println("Writing file: " + (String)path);
-    Serial.println("Write Message: " + (String)message);
 
     File file = fs.open(path, FILE_WRITE);
     if (!file)
@@ -157,13 +157,10 @@ void writeFile(fs::FS &fs, String str_path, String msg)
  */
 void appendFile(fs::FS &fs, String str_path, String msg)
 {
-    msg += "\n";
+    Serial.println("Writing file: " + (String)str_path);
+    Serial.println("Write Message: " + (String)msg);
     char path[str_path.length()];
     strcpy(path, str_path.c_str());
-    char message[msg.length()];
-    strcpy(message, msg.c_str());
-    Serial.println("Writing file: " + (String)path);
-    Serial.println("Write Message: " + (String)message);
 
     File file = fs.open(path, FILE_APPEND);
     if (!file)
@@ -172,6 +169,11 @@ void appendFile(fs::FS &fs, String str_path, String msg)
         writeFile(SD, path, msg);
         return;
     }
+
+    msg += "\n";
+    char message[msg.length()];
+    strcpy(message, msg.c_str());
+
     if (file.print(message))
         Serial.println("Message appended");
     else
