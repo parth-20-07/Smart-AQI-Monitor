@@ -237,7 +237,7 @@ bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_
         serializeJsonPretty(doc, Serial);
         char shadow[measureJson(doc) + 1];
         serializeJson(doc, shadow, sizeof(shadow));
-
+        Serial.println();
         int tries = 0;
         int max_tries = 30;
         while (tries < max_tries)

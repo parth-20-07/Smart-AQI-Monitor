@@ -10,26 +10,26 @@ bool send_message(String msg)
     hSerial.begin(9600);
     delay(500);
     digitalWrite(SERVER_BOARD_CONTROL_PIN, LOW);
-    uint32_t lastMillis = millis();
-    while ((millis() - lastMillis) < 2000)
+    uint32_t last_millis = millis();
+    bool reply_status = false;
+    while ((millis() - last_millis) < 2000)
         if (digitalRead(SENSOR_BOARD_CONTROL_PIN) == LOW)
-            break;
-    if (digitalRead(SENSOR_BOARD_CONTROL_PIN) == HIGH)
+            reply_status = true;
+
+    if (!reply_status)
     {
         Serial.println("Send Failure");
         digitalWrite(SERVER_BOARD_CONTROL_PIN, HIGH);
         hSerial.end();
         return false;
     }
-    msg += '#';
-    uint8_t msg_length = msg.length();
-    char char_msg[msg_length];
-    strcpy(char_msg, msg.c_str());
-    Serial.println("Writing Message: " + (String)char_msg);
-    for (size_t i = 0; i < msg.length(); i++)
-        if (hSerial.available())
-            hSerial.write(char_msg[i]);
-    Serial.println("Send Success");
+
+    Serial.println("Server Replied");
+    last_millis = millis();
+    msg += "#";
+    hSerial.write(msg.c_str());
+    Serial.println("Writing Message: " + (String)msg);
+    Serial.println("Sent");
     digitalWrite(SERVER_BOARD_CONTROL_PIN, HIGH);
     hSerial.end();
     return true;
@@ -42,13 +42,19 @@ String read_message(void)
     digitalWrite(SENSOR_BOARD_CONTROL_PIN, LOW);
     delay(50);
     String msg = "";
-    if (hSerial.available())
+
+    while (!hSerial.available())
+        ;
+
+    while (hSerial.available())
         msg = hSerial.readStringUntil('#');
     Serial.println("Recieved Message: " + msg);
-    while (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW)
-        ;
+
+    // while (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW)
+    //     Serial.print(".");
     delay(10);
     digitalWrite(SENSOR_BOARD_CONTROL_PIN, HIGH);
+    Serial.println("Read Complete");
     delay(10);
     hSerial.end();
     return msg;

@@ -11,7 +11,11 @@
 void setup_microsd(void)
 {
     if (!SD.begin(SD_CHIP_SELECT))
+    {
         Serial.println("MicroSd Card Mount Failed");
+        while (1)
+            ;
+    }
     else
         Serial.println("MicroSD Card Mount Successful");
 }

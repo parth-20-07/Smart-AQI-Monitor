@@ -1,14 +1,15 @@
 #include <Arduino.h>
 #include <Sensor_Data_Collection.cpp>
+#include "Arduino Nano Pin Connection.h"
 #include "Variable_Declaration.h"
 #include "Serial_InterBoard_Communication.cpp"
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("\n\n\n/* ----------------------------- Starting Device ---------------------------- */");
-  setup_sensors();
   setup_board_pins();
+  setup_sensors();
   Serial.println("/* -------------------------- Device Setup Complete ------------------------- */\n");
 }
 
@@ -38,10 +39,7 @@ void loop()
   // msg += collect_voc_values();
   delay(500);
   Serial.println(msg);
+  send_message(msg);
   Serial.println();
-  uint32_t last_millis = millis();
-  while ((millis() - last_millis) < (SENSOR_DATA_REFRESH_TIME_IN_SECONDS * 1000))
-    if (send_message(msg))
-      break;
-  delay(SENSOR_DATA_REFRESH_TIME_IN_SECONDS * 1000);
+  delay(SENSOR_DATA_REFRESH_TIME_IN_MINUTES * 60000);
 }

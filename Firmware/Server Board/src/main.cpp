@@ -30,86 +30,80 @@ void fetch_new_values_from_server(void)
 }
 
 /* ------------------------ Data Processing Functions ----------------------- */
-void deparse_message(bool live_data, String data_msg)
+void deparse_message(String deparse_msg)
 {
-  if (live_data)
+  Serial.println("Deparse Full String: " + deparse_msg);
+
+  String msg = "";
+  char token = ',';
+  uint8_t count = 0;
+  uint8_t last_index_pos = 0;
+  for (size_t i = 0; i < deparse_msg.length(); i++)
   {
-    // Expected Data String: T:29,H:71,C:410,M:597,D:4,L:40,#
-    // T => Temperature
-    // H => Humidity
-    // C => Carbondioxide
-    // M => Carbonmonoxide
-    // D => Dust PM AE 2.5
-    // L => Light Intensity
-    temperature = 0;
-    humidity = 0;
-    carbondioxide = 0;
-    carbonmonoxide = 0;
-    pm_ae_2_5 = 0;
-    lux = 0;
-
-    Serial.println("Deparse String: " + data_msg);
-    String data_params[6]; // T,H,C,M,D,L
+    if (deparse_msg[i] == token)
     {
-      char token = ',';
-      uint8_t param_index = 0;
-      uint8_t last_param_pos = 0;
-      for (size_t i = 0; i < data_msg.length(); i++)
-      {
-        if (data_msg[i] == token)
-        {
-          data_params[param_index] = data_msg.substring(last_param_pos, i);
-          last_param_pos = i + 1;
-          param_index++;
-        }
-      }
+      if (count == 0)
+        formatted_day = deparse_msg.substring(0, i);
+      else if (count == 1)
+        formatted_time = deparse_msg.substring(last_index_pos, i);
+      else if (count == 2)
+        msg = deparse_msg.substring(last_index_pos);
+      last_index_pos = i + 1;
+      count++;
     }
-
-    for (size_t i = 0; i < NUM_OF_PARAMS; i++)
-      Serial.println("Param " + (String)i + " = " + data_params[i]);
-
-    char param_values[6][10]; // T,H,C,M,D,L
-    {
-      char token = ':';
-      for (size_t j = 0; j < 6; j++)
-        for (size_t i = 0; i < data_params[j].length(); i++)
-          if (data_params[j][i] == token)
-          {
-            String values = data_params[j].substring(i + 1);
-            strcpy(param_values[j], values.c_str());
-          }
-    }
-    temperature = atoi(param_values[0]);
-    humidity = atoi(param_values[1]);
-    carbondioxide = atoi(param_values[2]);
-    carbonmonoxide = atoi(param_values[3]);
-    pm_ae_2_5 = atoi(param_values[4]);
-    lux = atoi(param_values[5]);
   }
 
-  else
+  // Expected Data String: T:29,H:71,C:410,M:597,D:4,L:40,#
+  // T => Temperature
+  // H => Humidity
+  // C => Carbondioxide
+  // M => Carbonmonoxide
+  // D => Dust PM AE 2.5
+  // L => Light Intensity
+  temperature = 0;
+  humidity = 0;
+  carbondioxide = 0;
+  carbonmonoxide = 0;
+  pm_ae_2_5 = 0;
+  lux = 0;
+
+  msg += ",";
+  Serial.println("Deparse Message String: " + msg);
+  String data_params[6]; // T,H,C,M,D,L
   {
     char token = ',';
-    uint8_t count = 0;
-    uint8_t last_index_pos = 0;
-    for (size_t i = 0; i < data_msg.length(); i++)
+    uint8_t param_index = 0;
+    uint8_t last_param_pos = 0;
+    for (size_t i = 0; i < msg.length(); i++)
     {
-      if (data_msg[i] == token)
+      if (msg[i] == token)
       {
-        if (count == 0)
-          formatted_day = data_msg.substring(0, i);
-        else if (count == 1)
-          formatted_time = data_msg.substring(last_index_pos, i);
-        else if (count == 2)
-        {
-          String msg = data_msg.substring(last_index_pos, i);
-          deparse_message(true, msg);
-        }
-        last_index_pos = i + 1;
-        count++;
+        data_params[param_index] = msg.substring(last_param_pos, i);
+        last_param_pos = i + 1;
+        param_index++;
       }
     }
+    for (size_t i = 0; i < param_index; i++)
+      Serial.println("Param " + (String)i + " = " + data_params[i]);
   }
+
+  char param_values[6][10]; // T,H,C,M,D,L
+  {
+    char token = ':';
+    for (size_t j = 0; j < 6; j++)
+      for (size_t i = 0; i < data_params[j].length(); i++)
+        if (data_params[j][i] == token)
+        {
+          String values = data_params[j].substring(i + 1);
+          strcpy(param_values[j], values.c_str());
+        }
+  }
+  temperature = atoi(param_values[0]);
+  humidity = atoi(param_values[1]);
+  carbondioxide = atoi(param_values[2]);
+  carbonmonoxide = atoi(param_values[3]);
+  pm_ae_2_5 = atoi(param_values[4]);
+  lux = atoi(param_values[5]);
 }
 
 /* ---------------------------- MicroSD Function ---------------------------- */
@@ -153,14 +147,14 @@ void read_backlog_file(void)
   {
     String send_string = printFile.readStringUntil('\n');
     Serial.println((String)lineIndex + " : " + send_string);
-    deparse_message(false, send_string);
+    deparse_message(send_string);
     if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux))
-      ;
     {
       Serial.println("Send Failure");
       complete_send_success = false;
       break;
     }
+    Serial.println("------------------------------------");
     lineIndex++;
     delay(50);
   }
@@ -212,7 +206,8 @@ void set_led_alerts(void)
 /* -------------------------------------------------------------------------- */
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
+  setup_board_pins();
   setup_leds();
   setup_sensors();
   setup_microsd();
@@ -224,26 +219,26 @@ void setup()
       if (aws_setup())
         aws_connect_flag = true;
   last_aws_upload = millis();
+  Serial.println("============================= Device Setup Complete =============================");
 }
 
 void loop()
 {
-
-  // if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
+  if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
   {
-    String recieved_msg = "T:" + (String)random(0, 100) + ",H:" + (String)random(0, 100) + ",C:" + (String)random(0, 100) + ",M:" + (String)random(0, 100) + ",D:" + (String)random(0, 100) + ",L:" + (String)random(0, 100) + ",";
-    // String recieved_msg = read_message();
+    Serial.println("\n\n=======================================");
+    String recieved_msg = read_message();
     if (recieved_msg != "")
     {
-      Serial.println("\n\n=======================================");
       Serial.println("Incoming Msg: " + recieved_msg);
       printLocalTime();
-      set_led_alerts();
-      formatted_day = (String)year + "/" + (String)month + "/" + (String)date;
-      formatted_time = (String)hour + ":" + (String)minutes + ":" + (String)seconds;
-      String backup_msg = formatted_day + "," + formatted_time + ",T:" + (String)temperature + ",H:" + (String)humidity + ",C:" + (String)carbondioxide + ",M:" + (String)carbonmonoxide + ",D:" + (String)pm_ae_2_5 + ",L:" + (String)lux + ",";
+      formatted_day = (String)year + "-" + (String)month + "-" + (String)date;
+      formatted_time = (String)hour + "-" + (String)minutes + "-" + (String)seconds;
+      String backup_msg = formatted_day + "," + formatted_time + "," + recieved_msg;
       appendFile(SD, BACKLOG_FILE, backup_msg);
       backlog_file_available = true;
+      deparse_message(backup_msg);
+      set_led_alerts();
     }
   }
 
@@ -251,16 +246,12 @@ void loop()
     fetch_new_values_from_server();
 
   if (backlog_file_available) // To check the backlog and upload any data which is not uploaded
-    if ((millis() - last_aws_upload) > (AWS_UPLOAD_TIME * 60000))
+    if ((millis() - last_aws_upload) > (AWS_UPLOAD_TIME_IN_MINUTES * 60000))
     {
       if (!aws_connect_flag) // Connect to AWS if not connected
         aws_setup();
-
       if (aws_connect_flag)
         read_backlog_file();
-
       last_aws_upload = millis();
     }
-
-  delay(2000);
 }

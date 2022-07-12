@@ -28,7 +28,7 @@ char ssid[SSID_CHAR_LENGTH], password[PASSWORD_CHAR_LENGTH];
 bool aws_connect_flag = false;
 bool backlog_file_available = false;
 uint32_t last_aws_upload;
-#define AWS_UPLOAD_TIME 1
+#define AWS_UPLOAD_TIME_IN_MINUTES 5 // TODO: AWS Update Time Interval
 
 /* ------------------------- MICRO SD CONFIGURATION ------------------------- */
 #define SSID_FILE "/ssid.txt"
