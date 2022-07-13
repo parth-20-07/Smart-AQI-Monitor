@@ -16,7 +16,7 @@
 #define ESP32_GPIO_27 27
 #define ESP32_GPIO_32 32
 #define ESP32_GPIO_33 33
-#define ESP32_GPIO_34 34
+#define ESP32_GPIO_34 34 // BATTERY VOLTAGE INPUT
 #define ESP32_GPIO_35 35
 #define ESP32_GPIO_39 39
 #define ESP32_GPIO_36 36
@@ -46,6 +46,9 @@
 
 /* --------------------------- MICROSD CONNECTION --------------------------- */
 #define SD_CHIP_SELECT ESP32_GPIO_5
+
+/* --------------------------- BATTERY CONNECTION --------------------------- */
+#define BATT_ADC_IN ESP32_GPIO_34
 
 void setup_board_pins(void)
 {

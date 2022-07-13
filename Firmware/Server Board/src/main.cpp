@@ -1,13 +1,13 @@
 #include <Arduino.h>
 #include <RGB_Led_Control.cpp>
 #include <Variable_Declaration.h>
-#include <Sensor_Data_Collection.cpp>
 #include <Serial_InterBoard_Communication.cpp>
 #include <esp32_webserver.cpp>
 #include <MicroSD_Control.cpp>
 #include <WiFi_Setup.cpp>
 #include <NTP_Configuration.cpp>
 #include <MQTT_Connection.cpp>
+#include <Battery_Configuration.cpp>
 
 /* --------------------------- Webserver Functions -------------------------- */
 void fetch_new_values_from_server(void)
@@ -20,7 +20,7 @@ void fetch_new_values_from_server(void)
 
   deleteFile(SD, PASSWORD_FILE);
   writeFile(SD, PASSWORD_FILE, (String)password);
-  for (size_t i = 0; i < NUM_OF_PARAMS; i++)
+  for (size_t i = 0; i < (NUM_OF_PARAMS * 2); i++)
   {
     String file_path = "/" + (String)i + ".txt";
     deleteFile(SD, file_path);
@@ -66,10 +66,12 @@ void deparse_message(String deparse_msg)
   carbonmonoxide = 0;
   pm_ae_2_5 = 0;
   lux = 0;
+  voc = 0;
+  battery = 0;
 
   msg += ",";
   Serial.println("Deparse Message String: " + msg);
-  String data_params[6]; // T,H,C,M,D,L
+  String data_params[NUM_OF_PARAMS + 1]; // T,H,C,M,D,L,V,B
   {
     char token = ',';
     uint8_t param_index = 0;
@@ -87,7 +89,7 @@ void deparse_message(String deparse_msg)
       Serial.println("Param " + (String)i + " = " + data_params[i]);
   }
 
-  char param_values[6][10]; // T,H,C,M,D,L
+  char param_values[NUM_OF_PARAMS + 1][10]; // T,H,C,M,D,L,V,B
   {
     char token = ':';
     for (size_t j = 0; j < 6; j++)
@@ -104,6 +106,8 @@ void deparse_message(String deparse_msg)
   carbonmonoxide = atoi(param_values[3]);
   pm_ae_2_5 = atoi(param_values[4]);
   lux = atoi(param_values[5]);
+  voc = atoi(param_values[6]);
+  battery = atoi(param_values[7]);
 }
 
 /* ---------------------------- MicroSD Function ---------------------------- */
@@ -117,17 +121,18 @@ void fetch_configuration_details(void)
   strcpy(password, str_pwd.c_str());
   Serial.println("Fetched Password: " + (String)password);
 
-  for (size_t i = 0; i < NUM_OF_PARAMS; i++)
+  if ((((String)ssid).length() == 0) || (((String)password).length() == 0))
+    fetch_new_values_from_server();
+
+  for (size_t i = 0; i < (NUM_OF_PARAMS * 2); i++)
   {
     String file_path = "/" + (String)i + ".txt";
     String value = read_single_line_data_from_sd_card(file_path);
-    char char_value[value.length()];
-    strcpy(char_value, value.c_str());
-    params_range[i] = atoi(char_value);
+    if (value.length() == 0)
+      fetch_new_values_from_server();
+    params_range[i] = atoi(value.c_str());
+    Serial.println("Param[" + (String)i + "]: " + (String)params_range[i]);
   }
-
-  for (size_t i = 0; i < NUM_OF_PARAMS; i++)
-    Serial.println("Param " + (String)i + "=" + (String)params_range[i]);
 
   return;
 }
@@ -148,7 +153,7 @@ void read_backlog_file(void)
     String send_string = printFile.readStringUntil('\n');
     Serial.println((String)lineIndex + " : " + send_string);
     deparse_message(send_string);
-    if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux))
+    if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux, voc, battery))
     {
       Serial.println("Send Failure");
       complete_send_success = false;
@@ -199,6 +204,18 @@ void set_led_alerts(void)
     set_specific_led(6, RED);
   else
     set_specific_led(6, GREEN);
+
+  if ((voc < params_range[12]) || (voc > params_range[13]))
+    set_specific_led(7, RED);
+  else
+    set_specific_led(7, GREEN);
+
+  if (internet_connection_status)
+    set_specific_led(8, GREEN);
+  else if (wifi_connection_status)
+    set_specific_led(8, ORANGE);
+  else
+    set_specific_led(8, RED);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -209,11 +226,9 @@ void setup()
   Serial.begin(9600);
   setup_board_pins();
   setup_leds();
-  setup_sensors();
+  battery_setup();
   setup_microsd();
   fetch_configuration_details();
-  if ((((String)ssid).length() == 0) || (((String)password).length() == 0))
-    fetch_new_values_from_server();
   if (connect_to_wifi())
     if (connect_to_ntp())
       if (aws_setup())
@@ -230,14 +245,14 @@ void loop()
     String recieved_msg = read_message();
     if (recieved_msg != "")
     {
-      Serial.println("Incoming Msg: " + recieved_msg);
       printLocalTime();
       formatted_day = (String)year + "-" + (String)month + "-" + (String)date;
       formatted_time = (String)hour + "-" + (String)minutes + "-" + (String)seconds;
-      String backup_msg = formatted_day + "," + formatted_time + "," + recieved_msg;
+      String backup_msg = formatted_day + "," + formatted_time + "," + recieved_msg + battery_level_percentage();
       appendFile(SD, BACKLOG_FILE, backup_msg);
       backlog_file_available = true;
       deparse_message(backup_msg);
+      connect_to_wifi();
       set_led_alerts();
     }
   }

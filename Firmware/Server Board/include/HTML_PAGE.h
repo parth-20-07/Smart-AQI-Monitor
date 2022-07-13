@@ -104,7 +104,6 @@ const char index_html[] PROGMEM = R"rawliteral(
                         <input type="number" name="max_pm_ae_2.5" placeholder="Maximum" min="0" max="5000" />
                     </td>
                 </tr>
-
                 <tr>
                     <td align="right">Light Intensity (lx):</td>
                     <td>
@@ -112,6 +111,16 @@ const char index_html[] PROGMEM = R"rawliteral(
                     </td>
                     <td>
                         <input type="number" name="max_lux" placeholder="Maximum" min="0" max="5000" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right">Volatile Organic Component (VOC):</td>
+                    <td>
+                        <input type="number" name="min_voc" placeholder="Minimum" min="0" max="5000" />
+                    </td>
+                    <td>
+                        <input type="number" name="max_voc" placeholder="Maximum" min="0" max="5000" />
                     </td>
                 </tr>
             </table>

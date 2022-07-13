@@ -25,7 +25,7 @@ void connectToMqtt(bool nonBlocking);
 void checkWiFiThenMQTT(void);
 void checkWiFiThenMQTTNonBlocking(void);
 void checkWiFiThenReboot(void);
-bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux);
+bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux, uint16_t voc, uint8_t battery);
 
 /* -------------------------- FUNCTION DECLARATION -------------------------- */
 /**
@@ -209,10 +209,12 @@ void checkWiFiThenReboot(void)
  * @param co
  * @param pm_ae_2_5
  * @param lux
+ * @param voc
+ * @param battery
  * @return true
  * @return false
  */
-bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux)
+bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux, uint16_t voc, uint8_t battery)
 {
 
     bool send_success = false;
@@ -233,6 +235,8 @@ bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_
         doc["co"] = co;
         doc["pm_ae_2_5"] = pm_ae_2_5;
         doc["lux"] = lux;
+        doc["voc"] = voc;
+        doc["batt"] = battery;
 
         serializeJsonPretty(doc, Serial);
         char shadow[measureJson(doc) + 1];

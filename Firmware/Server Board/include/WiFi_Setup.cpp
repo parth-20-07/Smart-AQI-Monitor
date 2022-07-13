@@ -4,18 +4,27 @@
 #include "Arduino.h"
 #include "WiFi.h"
 #include "Variable_Declaration.h"
-
-/* ----------------------------- BASIC DEFITION ----------------------------- */
-
+#include <WiFi.h>
+#include <ESP32Ping.h>
+const IPAddress remote_ip(192, 168, 0, 1);
 /* --------------------------- FUNCTION DEFINITION -------------------------- */
+bool check_internet_connection_status(void)
+{
+    internet_connection_status = Ping.ping("www.google.com");
+    if (internet_connection_status)
+        Serial.println("Internet Connected");
+    else
+        Serial.println("Internet Disconnected");
+    return internet_connection_status;
+}
 
 /**
  * @brief Setup WiFi and NTP
  */
-bool connect_to_wifi()
+bool connect_to_wifi(void)
 {
     Serial.println("Connecting to Wi-Fi");
-    delay(50);
+    delay(10);
 
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
@@ -34,12 +43,17 @@ bool connect_to_wifi()
         else
         {
             Serial.println("\nWi-Fi Connected!");
+            wifi_connection_status = true;
+            check_internet_connection_status();
             break;
         }
     }
+    delay(50);
 
     if (WiFi.status() != WL_CONNECTED)
     {
+        wifi_connection_status = false;
+        internet_connection_status = false;
         Serial.println("\nWifi Not Connected to SSID: " + (String)ssid);
         return false;
     }

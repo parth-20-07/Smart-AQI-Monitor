@@ -10,7 +10,7 @@
 AsyncWebServer server(80);
 const char *PARAM_INPUT_1 = "ssid";
 const char *PARAM_INPUT_2 = "password";
-String PARAM_INPUT[NUM_OF_PARAMS] = {
+String PARAM_INPUT[NUM_OF_PARAMS * 2] = {
     "min_temp",
     "max_temp",
     "min_humi",
@@ -23,6 +23,8 @@ String PARAM_INPUT[NUM_OF_PARAMS] = {
     "max_pm_ae_2.5",
     "min_lux",
     "max_lux",
+    "min_voc",
+    "max_voc",
 };
 #define WEBSERVER_SSID "Smart AQI Monitor"
 #define WEBSERVER_PASSWORD "123456789"
@@ -93,15 +95,13 @@ void launch_webserver(void)
             password[i] = inputMessage[i];
     }
 
-    for (size_t i = 0; i < NUM_OF_PARAMS; i++)
+    for (size_t i = 0; i < (NUM_OF_PARAMS*2); i++)
         if (request->hasParam(PARAM_INPUT[i]))
         {
             inputMessage = request->getParam(PARAM_INPUT[i])->value();
             inputParam = PARAM_INPUT[i];
             Serial.println(PARAM_INPUT[i] + ": " + inputMessage);
-            char char_msg[inputMessage.length()];
-            strcpy(char_msg,inputMessage.c_str());
-            params_range[i] = atoi(char_msg);
+            params_range[i] = atoi(inputParam.c_str());
         }
     else
     {
