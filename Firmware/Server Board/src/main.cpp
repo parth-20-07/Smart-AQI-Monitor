@@ -12,6 +12,8 @@
 /* --------------------------- Webserver Functions -------------------------- */
 void fetch_new_values_from_server(void)
 {
+  set_specific_led(8, BLUE);
+
   launch_webserver();
   Serial.println("Saving Values");
 
@@ -71,7 +73,7 @@ void deparse_message(String deparse_msg)
 
   msg += ",";
   Serial.println("Deparse Message String: " + msg);
-  String data_params[NUM_OF_PARAMS + 1]; // T,H,C,M,D,L,V,B
+  String data_params[NUM_OF_PARAMS + 2]; // T,H,C,M,D,H,L,V,B
   {
     char token = ',';
     uint8_t param_index = 0;
@@ -85,14 +87,12 @@ void deparse_message(String deparse_msg)
         param_index++;
       }
     }
-    for (size_t i = 0; i < param_index; i++)
-      Serial.println("Param " + (String)i + " = " + data_params[i]);
   }
 
-  char param_values[NUM_OF_PARAMS + 1][10]; // T,H,C,M,D,L,V,B
+  char param_values[NUM_OF_PARAMS + 2][10]; // T,H,C,M,D,H,L,V,B
   {
     char token = ':';
-    for (size_t j = 0; j < 6; j++)
+    for (size_t j = 0; j < NUM_OF_PARAMS + 2; j++)
       for (size_t i = 0; i < data_params[j].length(); i++)
         if (data_params[j][i] == token)
         {
@@ -105,6 +105,7 @@ void deparse_message(String deparse_msg)
   carbondioxide = atoi(param_values[2]);
   carbonmonoxide = atoi(param_values[3]);
   pm_ae_2_5 = atoi(param_values[4]);
+  pm_ae_10 = atoi(param_values[5]);
   lux = atoi(param_values[5]);
   voc = atoi(param_values[6]);
   battery = atoi(param_values[7]);
@@ -115,11 +116,9 @@ void fetch_configuration_details(void)
 {
   String str_ssid = read_single_line_data_from_sd_card(SSID_FILE);
   strcpy(ssid, str_ssid.c_str());
-  Serial.println("Fetched SSID: " + (String)ssid);
 
   String str_pwd = read_single_line_data_from_sd_card(PASSWORD_FILE);
   strcpy(password, str_pwd.c_str());
-  Serial.println("Fetched Password: " + (String)password);
 
   if ((((String)ssid).length() == 0) || (((String)password).length() == 0))
     fetch_new_values_from_server();
@@ -131,7 +130,8 @@ void fetch_configuration_details(void)
     if (value.length() == 0)
       fetch_new_values_from_server();
     params_range[i] = atoi(value.c_str());
-    Serial.println("Param[" + (String)i + "]: " + (String)params_range[i]);
+    if (params_range[i] <= 0)
+      fetch_new_values_from_server();
   }
 
   return;
@@ -153,7 +153,7 @@ void read_backlog_file(void)
     String send_string = printFile.readStringUntil('\n');
     Serial.println((String)lineIndex + " : " + send_string);
     deparse_message(send_string);
-    if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux, voc, battery))
+    if (!sendData(formatted_day, formatted_time, temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, pm_ae_10, lux, voc, battery))
     {
       Serial.println("Send Failure");
       complete_send_success = false;
@@ -232,13 +232,17 @@ void setup()
   if (connect_to_wifi())
     if (connect_to_ntp())
       if (aws_setup())
+      {
         aws_connect_flag = true;
+        read_backlog_file();
+      }
   last_aws_upload = millis();
   Serial.println("============================= Device Setup Complete =============================");
 }
 
 void loop()
 {
+  // run_battery_calibration();                        // TODO: Uncomment this while reading battery value
   if (digitalRead(SERVER_BOARD_CONTROL_PIN) == LOW) // Deparse Incoming message from sensor board
   {
     Serial.println("\n\n=======================================");

@@ -101,7 +101,7 @@ void launch_webserver(void)
             inputMessage = request->getParam(PARAM_INPUT[i])->value();
             inputParam = PARAM_INPUT[i];
             Serial.println(PARAM_INPUT[i] + ": " + inputMessage);
-            params_range[i] = atoi(inputParam.c_str());
+            params_range[i] = atoi(inputMessage.c_str());
         }
     else
     {

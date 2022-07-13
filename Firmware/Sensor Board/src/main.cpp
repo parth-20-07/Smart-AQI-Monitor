@@ -23,6 +23,7 @@ void loop()
    * C => Carbondioxide
    * M => Carbonmonoxide
    * D => Dust PM AE 2.5
+   * H => Dust PM AE 10
    * L => Light Intensity
    * V => Volatile Organic Components
    */
@@ -36,10 +37,11 @@ void loop()
   delay(500);
   msg += collect_lux_values();
   delay(500);
-  // msg += collect_voc_values();
+  msg += collect_voc_values();
   delay(500);
   Serial.println(msg);
   send_message(msg);
   Serial.println();
-  delay(SENSOR_DATA_REFRESH_TIME_IN_MINUTES * 60000);
+  // delay(SENSOR_DATA_REFRESH_TIME_IN_MINUTES * 60000);
+  delay(10000); // TODO: Delete Later On
 }

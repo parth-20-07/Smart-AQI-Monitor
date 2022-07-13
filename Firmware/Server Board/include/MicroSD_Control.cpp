@@ -194,7 +194,7 @@ void appendFile(fs::FS &fs, String str_path, String msg)
  */
 String read_single_line_data_from_sd_card(String file_path)
 {
-    Serial.println("Reading Data");
+    Serial.println("Reading Data From: " + file_path);
     String send_string;
     File printFile = SD.open(file_path);
     if (!printFile)
@@ -203,7 +203,7 @@ String read_single_line_data_from_sd_card(String file_path)
         send_string = printFile.readStringUntil('\n');
     printFile.close();
 
-    Serial.println("Read Line: " + send_string);
+    Serial.println("Read Data: " + send_string);
     return send_string;
 }
 

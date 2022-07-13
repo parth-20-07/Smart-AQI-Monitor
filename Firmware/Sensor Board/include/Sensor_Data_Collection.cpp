@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Arduino Nano Pin Connection.h"
 
-// #define HTU21D_TEMP_HUMIDITY_SENSOR // https://learn.sparkfun.com/tutorials/htu21d-humidity-sensor-hookup-guide
+#define HTU21D_TEMP_HUMIDITY_SENSOR // https://learn.sparkfun.com/tutorials/htu21d-humidity-sensor-hookup-guide
 // #define BME280_TEMP_HUMIDITY_PRESSURE_SENSOR // https://randomnerdtutorials.com/bme280-sensor-arduino-pressure-temperature-humidity/
 // #define MHZ19C_CO2_SENSOR                    // https://github.com/strange-v/MHZ19
 #define MHZ16C_CO2_SENSOR // https://github.com/datphys/MHZ16-CO2-sensor
@@ -17,7 +17,9 @@
 
 /* ---------------------------- BASIC DEFINITION ---------------------------- */
 #ifdef ADAFRUIT_SGP40_VOC_MODULE
+#ifndef HTU21D_TEMP_HUMIDITY_SENSOR
 #define HTU21D_TEMP_HUMIDITY_SENSOR
+#endif // HTU21D_TEMP_HUMIDITY_SENSOR
 #include "Adafruit_SGP40.h"
 Adafruit_SGP40 voc_sensor;
 float temperature, humidity;
@@ -145,7 +147,7 @@ void setup_sensors(void)
     Serial.println("Setting up Neo-6M GPS Sensor");
 #endif // NEO_6M_GPS_MODULE
 
-#ifndef ADAFRUIT_SGP40_VOC_MODULE
+#ifdef ADAFRUIT_SGP40_VOC_MODULE
     Serial.println("Setting up SGP40 VOC Sensor");
     if (!voc_sensor.begin())
         Serial.println("SGP40 sensor not found :(");
@@ -251,7 +253,7 @@ String collect_dust_sensor_values(void)
     // Serial.println("PM AE 10: " + (String)pm_ae_10);
     PMSerial.end();
     delay(50);
-    return (",D:" + (String)pm_ae_2_5);
+    return (",D:" + (String)pm_ae_2_5 + ",H:" + (String)pm_ae_10);
 }
 #endif // PMS_DUST_SENSOR
 
@@ -320,7 +322,7 @@ String collect_voc_values(void)
     Serial.println("Reading SGP40");
     collect_temperature_humidity_and_pressure_values();
     float voc_index = voc_sensor.measureVocIndex(temperature, humidity);
-    Serial.println("VOC: " + (String)voc_index + " voc_index");
+    // Serial.println("VOC: " + (String)voc_index + " voc_index");
     return (",V:" + (String)voc_index);
 }
 #endif // ADAFRUIT_SGP40_VOC_MODULE

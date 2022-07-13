@@ -43,7 +43,8 @@ String read_message(void)
     String msg = "";
 
     while (!hSerial.available())
-        ;
+        if (digitalRead(CONFIGURATION_BUTTON) == HIGH) // Launch Webserver to update Limits
+            return ("");
 
     while (hSerial.available())
         msg = hSerial.readStringUntil('#');

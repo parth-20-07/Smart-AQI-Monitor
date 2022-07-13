@@ -10,7 +10,7 @@
 // D => Dust PM AE 2.5
 // L => Light Intensity
 // V => VOC
-uint16_t temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, lux, voc;
+uint16_t temperature, humidity, carbondioxide, carbonmonoxide, pm_ae_2_5, pm_ae_10, lux, voc;
 uint8_t battery;
 #define NUM_OF_PARAMS 7
 uint16_t params_range[NUM_OF_PARAMS * 2];

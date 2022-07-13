@@ -17,7 +17,6 @@ MQTTClient client = MQTTClient(256);
 /* --------------------------- FUNCTION DEFINITION -------------------------- */
 bool aws_setup(void);
 void messageReceived(String &topic, String &payload);
-void read_aws_backlog_file();
 void handleEachAWSBacklogLine(char line[], int lineIndex);
 void lwMQTTErr(lwmqtt_err_t reason);
 void lwMQTTErrConnection(lwmqtt_return_code_t reason);
@@ -214,7 +213,7 @@ void checkWiFiThenReboot(void)
  * @return true
  * @return false
  */
-bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t lux, uint16_t voc, uint8_t battery)
+bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_t co2, uint16_t co, uint16_t pm_ae_2_5, uint16_t pm_ae_10, uint16_t lux, uint16_t voc, uint8_t battery)
 {
 
     bool send_success = false;
@@ -234,6 +233,7 @@ bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_
         doc["co2"] = co2;
         doc["co"] = co;
         doc["pm_ae_2_5"] = pm_ae_2_5;
+        doc["pm_ae_10"] = pm_ae_10;
         doc["lux"] = lux;
         doc["voc"] = voc;
         doc["batt"] = battery;
