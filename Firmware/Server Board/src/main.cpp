@@ -57,7 +57,7 @@ void deparse_message(String deparse_msg)
 
   // Expected Data String: T:29,H:71,C:410,M:597,D:4,L:40,#
   // T => Temperature
-  // H => Humidity
+  // W => Humidity
   // C => Carbondioxide
   // M => Carbonmonoxide
   // D => Dust PM AE 2.5
@@ -73,7 +73,7 @@ void deparse_message(String deparse_msg)
 
   msg += ",";
   Serial.println("Deparse Message String: " + msg);
-  String data_params[NUM_OF_PARAMS + 2]; // T,H,C,M,D,H,L,V,B
+  String data_params[NUM_OF_PARAMS + 2]; // T,W,C,M,D,H,L,V,B
   {
     char token = ',';
     uint8_t param_index = 0;
@@ -89,26 +89,44 @@ void deparse_message(String deparse_msg)
     }
   }
 
-  char param_values[NUM_OF_PARAMS + 2][10]; // T,H,C,M,D,H,L,V,B
   {
     char token = ':';
     for (size_t j = 0; j < NUM_OF_PARAMS + 2; j++)
       for (size_t i = 0; i < data_params[j].length(); i++)
         if (data_params[j][i] == token)
         {
+          String identifier = data_params[j].substring(0, i); // T,W,C,M,D,H,L,V,B
           String values = data_params[j].substring(i + 1);
-          strcpy(param_values[j], values.c_str());
+          uint16_t int_value = atoi(values.c_str());
+          if (identifier == "T")
+            temperature = int_value;
+          else if (identifier == "W")
+            humidity = int_value;
+          else if (identifier == "C")
+            carbondioxide = int_value;
+          else if (identifier == "M")
+            carbonmonoxide = int_value;
+          else if (identifier == "D")
+            pm_ae_2_5 = int_value;
+          else if (identifier == "H")
+            pm_ae_10 = int_value;
+          else if (identifier == "L")
+            lux = int_value;
+          else if (identifier == "V")
+            voc = int_value;
+          else if (identifier == "B")
+            battery = int_value;
         }
+    // Serial.println("T: " + (String)temperature);
+    // Serial.println("W: " + (String)humidity);
+    // Serial.println("C: " + (String)carbondioxide);
+    // Serial.println("M: " + (String)carbonmonoxide);
+    // Serial.println("D: " + (String)pm_ae_2_5);
+    // Serial.println("H: " + (String)pm_ae_10);
+    // Serial.println("L: " + (String)lux);
+    // Serial.println("V: " + (String)voc);
+    // Serial.println("B: " + (String)battery);
   }
-  temperature = atoi(param_values[0]);
-  humidity = atoi(param_values[1]);
-  carbondioxide = atoi(param_values[2]);
-  carbonmonoxide = atoi(param_values[3]);
-  pm_ae_2_5 = atoi(param_values[4]);
-  pm_ae_10 = atoi(param_values[5]);
-  lux = atoi(param_values[5]);
-  voc = atoi(param_values[6]);
-  battery = atoi(param_values[7]);
 }
 
 /* ---------------------------- MicroSD Function ---------------------------- */

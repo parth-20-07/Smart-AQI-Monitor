@@ -263,4 +263,23 @@ bool sendData(String date, String time, uint8_t temp, uint8_t humiditiy, uint16_
     return send_success;
 }
 
+void sendData2(void)
+{
+    if (!client.connected())
+        checkWiFiThenMQTT();
+    if (client.connected())
+    {
+        client.loop();
+        // Reference:https://github.com/bblanchon/ArduinoJson/blob/6.x/examples/JsonGeneratorExample/JsonGeneratorExample.ino
+        StaticJsonDocument<500> doc;
+        Serial.println("Ping");
+        doc["msg"] = "Hello";
+        serializeJsonPretty(doc, Serial);
+        char shadow[measureJson(doc) + 1];
+        serializeJson(doc, shadow, sizeof(shadow));
+        Serial.println();
+        if (client.publish(AWS_IOT_PUBLISH_TOPIC, shadow, false, 0))
+            Serial.println("Send Success");
+    }
+}
 #endif

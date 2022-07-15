@@ -165,7 +165,7 @@ String collect_temperature_humidity_and_pressure_values(void)
     uint8_t humd = (uint8_t)humidity;
     // Serial.println("Temperature: " + (String)temp + "C");
     // Serial.println("Humidity: " + (String)humd + "%");
-    return ("T:" + (String)temp + ",H:" + (String)humd);
+    return ("T:" + (String)temp + ",W:" + (String)humd);
 }
 #endif // HTU21D_TEMP_HUMIDITY_SENSOR
 
@@ -322,7 +322,7 @@ String collect_voc_values(void)
     Serial.println("Reading SGP40");
     collect_temperature_humidity_and_pressure_values();
     float voc_index = voc_sensor.measureVocIndex(temperature, humidity);
-    // Serial.println("VOC: " + (String)voc_index + " voc_index");
+    //Serial.println("VOC: " + (String)voc_index + " voc_index");
     return (",V:" + (String)voc_index);
 }
 #endif // ADAFRUIT_SGP40_VOC_MODULE
