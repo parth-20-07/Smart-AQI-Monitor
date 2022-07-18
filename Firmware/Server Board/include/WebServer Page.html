@@ -53,70 +53,76 @@
             <h3>Enter Sensor Range</h3>
             <table>
                 <tr>
+                    <td align="right">Range</td>
+                    <td> Minimum</td>
+                    <td> Maximum</td>
+                </tr>
+
+                <tr>
                     <td align="right">Temperature (°C):</td>
                     <td>
-                        <input type="number" name="min_temp" placeholder="Minimum" min="0" max="60" />
+                        <input type="number" name="min_temp" placeholder="0" min="0" max="125" />
                     </td>
                     <td>
-                        <input type="number" name="max_temp" placeholder="Maximum" min="0" max="60" />
+                        <input type="number" name="max_temp" placeholder="125" min="0" max="125" />
                     </td>
                 </tr>
 
                 <tr>
                     <td align="right">Humidity (%):</td>
                     <td>
-                        <input type="number" name="min_humi" placeholder="Minimum" min="0" max="100" />
+                        <input type="number" name="min_humi" placeholder="0" min="0" max="100" />
                     </td>
                     <td>
-                        <input type="number" name="max_humi" placeholder="Maximum" min="0" max="100" />
+                        <input type="number" name="max_humi" placeholder="100" min="0" max="100" />
                     </td>
                 </tr>
                 <tr>
                     <td align="right">Carbondioxide (ppm):</td>
                     <td>
-                        <input type="number" name="min_co2" placeholder="Minimum" min="0" max="5000" />
+                        <input type="number" name="min_co2" placeholder="0" min="0" max="2000" />
                     </td>
                     <td>
-                        <input type="number" name="max_co2" placeholder="Maximum" min="0" max="5000" />
+                        <input type="number" name="max_co2" placeholder="2000" min="0" max="2000" />
                     </td>
                 </tr>
 
                 <tr>
                     <td align="right">Carbonmonoxide (ppm):</td>
                     <td>
-                        <input type="number" name="min_co" placeholder="Minimum" min="0" max="5000" />
+                        <input type="number" name="min_co" placeholder="0" min="0" max="1000" />
                     </td>
                     <td>
-                        <input type="number" name="max_co" placeholder="Maximum" min="0" max="5000" />
+                        <input type="number" name="max_co" placeholder="1000" min="1000" max="1000" />
                     </td>
                 </tr>
 
                 <tr>
                     <td align="right">PM AE 2.5 (ug/m3):</td>
                     <td>
-                        <input type="number" name="min_pm_ae_2.5" placeholder="Minimum" min="0" max="5000" />
+                        <input type="number" name="min_pm_ae_2.5" placeholder="0" min="0" max="0" />
                     </td>
                     <td>
-                        <input type="number" name="max_pm_ae_2.5" placeholder="Maximum" min="0" max="5000" />
+                        <input type="number" name="max_pm_ae_2.5" placeholder="1000" min="0" max="1000" />
                     </td>
                 </tr>
                 <tr>
                     <td align="right">Light Intensity (lx):</td>
                     <td>
-                        <input type="number" name="min_lux" placeholder="Minimum" min="0" max="5000" />
+                        <input type="number" name="min_lux" placeholder="1" min="1" max="65535" />
                     </td>
                     <td>
-                        <input type="number" name="max_lux" placeholder="Maximum" min="0" max="5000" />
+                        <input type="number" name="max_lux" placeholder="65535" min="1" max="65535" />
                     </td>
                 </tr>
 
                 <tr>
-                    <td align="right">Volatile Organic Component (VOC):</td>
+                    <td align="right">Volatile Organic Component (ppm):</td>
                     <td>
-                        <input type="number" name="min_voc" placeholder="Minimum" min="0" max="5000" />
+                        <input type="number" name="min_voc" placeholder="1" min="1" max="30" />
                     </td>
                     <td>
-                        <input type="number" name="max_voc" placeholder="Maximum" min="0" max="5000" />
+                        <input type="number" name="max_voc" placeholder="30" min="1" max="30" />
                     </td>
                 </tr>
             </table>
