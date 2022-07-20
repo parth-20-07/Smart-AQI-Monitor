@@ -28,6 +28,8 @@ void fetch_new_values_from_server(void)
     deleteFile(SD, file_path);
     writeFile(SD, file_path, (String)params_range[i]);
   }
+  Serial.println("/* --------------------------- Save Value Complete -------------------------- */");
+  delay(500);
   ESP.restart();
 }
 
