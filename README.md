@@ -57,6 +57,8 @@ More Details on calculation AQI can be found [here](https://www.airnow.gov/sites
 - Type C charging support.
 - Interactive Touch Screen Display.
 - Sensor and AQI Calculation accurate to 1 decimal place.
+- WiFi Connectivity to upload data to AWS Database.
+- MicroSD Card Data Backup of sensor data.
 
 <!-- # How to assemble the project
 1. Download the latest version of firmware from the /Firmware folder
